@@ -1,0 +1,385 @@
+
+SELECT * FROM EMP1 WHERE EMPNO=7839
+
+SELECT * FROM EMP1 WHERE JOB IN ('SALEMAN','MANAGER')
+
+
+SELECT * FROM EMP1 WHERE SAL>1500 AND SAL <3000
+
+SELECT * FROM EMP1 WHERE SAL BETWEEN 1500 AND 3000
+
+SELECT * FROM EMP1 WHERE ENAME LIKE 'S%'
+
+SELECT * FROM EMP1 WHERE ENAME LIKE '%S'
+
+SELECT * FROM EMP1 WHERE ENAME LIKE  '_A%'
+
+SELECT * FROM EMP1 WHERE ENAME LIKE  '____'
+
+SELECT * FROM EMP1 WHERE MGR IS NULL
+
+SELECT * FROM EMP1 WHERE HIREDATE >='1981-9-28'
+
+SELECT * FROM EMP1 WHERE HIREDATE <='1981-1-1'
+
+SELECT * FROM EMP1 WHERE HIREDATE >='1981-4-1' AND HIREDATE<='1981-6-30'
+
+SELECT * FROM EMP1 WHERE HIREDATE  BETWEEN '1981-4-1' AND '1981-6-30'
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE EMP2(
+EMPNO	INT PRIMARY KEY,
+ENAME 	VARCHAR(20) NOT NULL,
+GENDER 	CHAR(10) DEFAULT 'F',
+EMAIL 	VARCHAR(25)  UNIQUE,
+JOB 	VARCHAR(9) CHECK ( JOB IN('SALEMAN','CLERK','MANAGER','PRESIDENT','ANALYST')),
+MGR 	INT  REFERENCES EMP2(EMPNO),
+HIREDATE	DATE CHECK (HIREDATE > '2021-03-31'),
+SAL 	INT CHECK (SAL > 500),
+COMM 	INT CHECK (COMM > 200),
+DEPTNO	INT);
+
+
+
+INSERT INTO EMP2 VALUES(8999,'JOHNNY','M','johnny.j@gmail.com','MANAGER',NULL,'2021-04-12',15000,NULL,10)
+
+
+CREATE TABLE DEPT(
+
+DEPTNO 	INT PRIMARY KEY,
+DEPT_NAME	VARCHAR(20) NOT NULL,
+CITY 	VARCHAR(20)
+)
+---------------------------------------------------------------------------------------------
+HOW TO DECLARE COLUMN LEVEL CONSTRAINTS
+---------------------------------------------------------------------------------------------
+
+CREATE TABLE EMP2(
+EMPNO	INT PRIMARY KEY,
+ENAME 	VARCHAR(20) NOT NULL,
+GENDER 	CHAR(10) DEFAULT 'F',
+EMAIL 	VARCHAR(25)  UNIQUE,
+JOB 	VARCHAR(9) CHECK ( JOB IN('SALEMAN','CLERK','MANAGER','PRESIDENT','ANALYST')),
+MGR 	INT  REFERENCES EMP2(EMPNO),
+HIREDATE	,
+SAL 	INT CHECK (SAL > 500),
+COMM 	INT CHECK (COMM > 200),
+DEPTNO	INT REFERENCES DEPT(DEPTNO));
+
+---------------------------------------------------------------------------------------------
+HOW TO DECLARE TABLE LEVEL CONSTRAINTS
+---------------------------------------------------------------------------------------------
+
+CREATE TABLE EMP4(
+EMPNO	INT ,
+ENAME 	VARCHAR(20) NOT NULL,
+GENDER 	CHAR(10) DEFAULT 'F',
+EMAIL 	VARCHAR(25) ,
+JOB 	VARCHAR(9),
+MGR 	INT ,
+HIREDATE	DATE,
+SAL 	INT ,
+COMM 	INT ,
+DEPTNO	INT REFERENCES DEPT(DEPTNO)
+primary key (EMPNO),
+UNIQUE (EMAIL),
+ CHECK ( JOB IN('SALEMAN','CLERK','MANAGER','PRESIDENT','ANALYST')),
+FOREIGN KEY (MGR) REFERENCES EMP4(EMPNO),
+CHECK (HIREDATE > '2021-03-31'),
+CHECK (SAL > 500),
+CHECK (COMM > 200)
+CHECK (SAL > COMM),
+FOREIGN KEY (DEPTNO) REFERENCES DEPT(DEPTNO)
+);
+
+---------------------------------------------------------------------------------------------
+A. HSQL RENAME TABLE QUERY
+---------------------------------------------------------------------------------------------
+ALTER TABLE EMP4 RENAME EMP4 TO EMPLOYEE  
+
+---------------------------------------------------------------------------------------------
+B. ORACLE RENAME TABLE QUERY
+---------------------------------------------------------------------------------------------
+ALTER TABLE EMP4 TO EMPLOYEE
+
+---------------------------------------------------------------------------------------------
+C. ADD COLUMN TO TABLE
+---------------------------------------------------------------------------------------------
+ALTER TABLE EMPLOYEE ADD HRA INT
+
+---------------------------------------------------------------------------------------------
+D. DROP AN EXISTING COLUMN
+---------------------------------------------------------------------------------------------
+ALTER TABLE EMPLOYEE DROP TA
+
+---------------------------------------------------------------------------------------------
+E. DROP AN EXISTING COLUMN
+---------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------
+F. ADD CONSTRAINT TO AN EXISTING COLUMN 
+---------------------------------------------------------------------------------------------
+
+ALTER TABLE EMPLOYEE ADD CHECK (DA>0)
+
+---------------------------------------------------------------------------------------------
+G. INTRODUCE USER BASED CONSTRAINT NAME 
+---------------------------------------------------------------------------------------------
+
+CREATE TABLE EMP5(
+EMPNO	INT CONSTRAINT EMP5_PK PRIMARY KEY,
+
+EMAIL 	VARCHAR(25)  CONSTRAINT EMP5_UNIQUQ UNIQUE,
+AGE 	INT CONSTRAINT EMP5_AGE CHECK (AGE>0))
+*********************************************************************************
+
+
+CREATE TABLE EMP5
+(
+EMPNO INT CONSTRAINT EMP5_PK PRIMARY KEY,
+EMPNAME VARCHAR(20) NOT NULL,
+GENDER CHAR(10) DEFAULT 'F',
+EMAIL VARCHAR(30) CONSTRAINT  EMP5_UNIQUE_EMAIL UNIQUE,
+JOB VARCHAR(30) CONSTRAINT EMP5_JOBDESC CHECK(JOB IN('SALESMAN','MGR','PRESIDENT','ANALYST')),
+AGE INT CONSTRAINT EMP5_AGE CHECK (AGE >0),
+MGR INT CONSTRAINT EMP5_FOREIGN_KEY REFERENCES EMP5(MGR),
+SALARY INT CONSTRAINT EMP5_SALARY CHECK (SALARY>1000),
+COMMISSION INT CONSTRAINT EMP5_COMMISSION  CHECK (COMMISSION >200),
+HIREDATE DATE  CHECK (HIREDATE > '2021-03-31'),
+
+
+)
+---------------------------------------------------------------------------------------------
+H. TO CHECK CONSTRAINT ON TABLE
+---------------------------------------------------------------------------------------------
+
+SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+
+==================================================================
+select to_char(hiredate,'d dd dy day Day Mon mon Month yy yyy yyyy yyysp') from emp;
+
+d ==> day of the week
+
+select empno,to_char(hiredate, 'dy') from emp where to_char(hiredate,'dy') in ('mon','tue');
+
+select empno,ename,hiredate,add_months(hiredate,18) from emp;
+
+select hiredate from emp where to_char(hiredate,'yyyy')=1982;
+
+SELECT * FROM DEPT WHERE DNAME='SALES'
+
+SELECT EMPNO,ENAME,TO_CHAR(HIREDATE,'Day') FROM EMP WHERE TO_CHAR(HIREDATE,'Day')='Saturday'
+
+
+
+--------TO FIND THE EMPLOYEES IN SALES DEPARTMENT
+
+SELECT * FROM EMP WHERE DEPTNO=(SELECT DEPTNO FROM DEPT WHERE DNAME='SALES');
+
+-------TO FIND CUSTOMERS OF MARTIN
+
+SELECT * FROM CUSTOMER WHERE REPID=(SELECT EMPNO FROM EMP WHERE ENAME='MARTIN')
+
+-----QUERY WITHIN  QUERY
+
+SELECT * FROM CUSTOMER WHERE REPID IN (SELECT EMPNO FROM EMP WHERE ENAME='MARTIN' AND DEPTNO=(SELECT DEPTNO FROM DEPT WHERE DNAME='SALES'))
+
+
+
+--- ORDER PLACED BY CUSTOMER VOLLYRITE 
+
+SELECT * FROM ORD WHERE CUSTID = (
+SELECT CUSTID FROM CUSTOMER WHERE REPID IN 
+                            (SELECT EMPNO FROM EMP WHERE ENAME='MARTIN' AND DEPTNO=
+                                                    (SELECT DEPTNO FROM DEPT WHERE DNAME='SALES')
+                            ) )
+
+
+ ----BUSINESS GIVEN BY VOLLYRITE
+
+SELECT SUM(TOTAL) FROM ORD WHERE CUSTID = (
+SELECT CUSTID FROM CUSTOMER WHERE REPID IN 
+                            (SELECT EMPNO FROM EMP WHERE ENAME='MARTIN' AND DEPTNO=
+                                                    (SELECT DEPTNO FROM DEPT WHERE DNAME='SALES')
+                            ) ) 
+-----------------------------------------------------------------------------------------------------------------------------------
+JOINS 
+-----------------------------------------------------------------------------------------------------------------------------------
+
+SELECT ENAME,'IS WORKING AT ',LOC, 'IN ',DNAME, 'DEPARTMENT AS ',JOB FROM DEPT,EMP WHERE DEPT.DEPTNO= EMP.DEPTNO
+
+OR 
+
+SELECT ENAME||' IS WORKING AT '||LOC||' IN '||DNAME || ' DEPARTMENT AS '||JOB FROM DEPT,EMP WHERE DEPT.DEPTNO= EMP.DEPTNO
+
+
+SELECT ENAME||' IS WORKING AT '||LOC||' IN '||DNAME || ' DEPARTMENT AS '||JOB || ' EARNING $'|| SAL FROM DEPT,EMP WHERE DEPT.DEPTNO= EMP.DEPTNO
+
+
+SELECT ENAME||' HAS CUSTOMER ' ||  NAME FROM EMP E,CUSTOMER C WHERE E.EMPNO=C.REPID
+
+EQUI- JOINS
+
+SELECT DNAME,ENAME,NAME,
+    ORDERDATE,TOTAL,
+        ITEMID,PRODID,ACTUALPRICE,QTY,ITEMTOT
+            FROM DEPT D,EMP E,CUSTOMER C,ORD O,ITEM I
+               WHERE D.DEPTNO=E.DEPTNO 
+                 AND E.EMPNO=C.REPID
+                    AND C.CUSTID=O.CUSTID 
+                        AND O.ORDID=I.ORDID ORDER BY NAME
+
+
+
+SELECT DNAME,ENAME,NAME,
+    ORDERDATE,TOTAL,
+        ITEMID,I.PRODID,ACTUALPRICE,QTY,ITEMTOT,
+            DESCRIP
+                FROM DEPT D,EMP E,CUSTOMER C,ORD O,ITEM I,PRODUCT P
+                    WHERE D.DEPTNO=E.DEPTNO 
+                        AND E.EMPNO=C.REPID
+                            AND C.CUSTID=O.CUSTID 
+                                AND P.PRODID =I.PRODID
+                                  AND O.ORDID=I.ORDID ORDER BY ENAME	
+
+-----------NON EQUI JOIN
+SELECT EMPNO,ENAME,JOB,SAL,GRADE FROM EMP,SALGRADE 
+WHERE SAL BETWEEN LOSAL AND HISAL
+
+*************************************************************************************************************************
+CREATE TABLE BOOKS
+(
+    BOOKID NUMBER PRIMARY KEY,
+    BOOKTITLE VARCHAR2(20),
+    PRICE NUMBER(9,2),
+    AUTHID NUMBER
+)
+
+
+CREATE TABLE AUTHOR
+(
+    AUTHORID NUMBER PRIMARY KEY,
+    AUTHORNAME VARCHAR2(20),
+    CITY VARCHAR2(20),
+    BID NUMBER
+)
+
+INSERT INTO BOOKS VALUES(101,'JAVA PROGRAMMING',1200,1);
+INSERT INTO BOOKS VALUES(102,'HIBERNATE IN ACTION',1200,2);
+INSERT INTO BOOKS VALUES(103,'HIBERNATE IN ACTION',1200,3);
+INSERT INTO BOOKS VALUES(104,'UNIX SHELL SCRIPTING',500,NULL);
+
+INSERT INTO AUTHOR VALUES(1,'JAMES GOSLING','DC',101);
+INSERT INTO AUTHOR VALUES(2,'SCOTT M','LONDON',102);
+INSERT INTO AUTHOR VALUES(3,'RICHARD S','NEW YORK',103);
+INSERT INTO AUTHOR VALUES(4,'KATHEY S','AMSTERDAM',NULL);
+
+----BELOW WILL GIVE SAME RESULT AND WILL IGNORE WHERE NO AUTHID AND NO BOOKID IS PRESENT 
+SELECT * FROM AUTHOR A,BOOKS B WHERE A.AUTHORID=B.AUTHID
+SELECT * FROM AUTHOR A,BOOKS B WHERE A.BID=B.BOOKID
+
+
+---RIGHT OUTER JOIN GIVES ALL THE DETAILS OF RIGHT TABLE
+SELECT * FROM AUTHOR RIGHT OUTER JOIN BOOKS ON AUTHOR.AUTHORID = BOOKS.AUTHID
+
+
+------LEFT OUTER JOIN (GIVES THE DETAILS OF THE LEFT TABLE EVEN IF THERE ARE NO CORES VALUES IN THE RIGHT TABLE
+SELECT * FROM AUTHOR LEFT OUTER JOIN BOOKS ON AUTHOR.AUTHORID = BOOKS.AUTHID
+
+
+------------SELF JOIN-------------------------------------------
+---EMP AND ALL THE PEOPLE REPORTING TO IT WITH THEIR SALARIES
+
+--KING IS WORKING AS PRESIDENT EARNING 5000 AND REPORTING TO NULL 
+--BLASKE IS WORKING AS MANAGER EARNING 2850 AND REPORTING TO KING
+
+
+SELECT W.ENAME||' IS WORKING AS ' ||W.JOB||' AND IS EARNING $'||W.SAL||' AND REPORTING TO '||MN.ENAME 
+    FROM EMP MN,EMP W 
+        WHERE MN.EMPNO=W.MGR 
+*****************************************************************************************************************************
+
+
+
+
+CREATE SEQUENCE MYSEQUENCE;
+
+SELECT MYSEQUENCE.NEXTVAL FROM EMP
+
+
+CREATE TABLE PLAYER
+(
+    PLAYERID NUMBER PRIMARY KEY,
+    PLAYERNAME VARCHAR(200)
+)
+
+
+INSERT INTO PLAYER VALUES(MYSEQUENCE.NEXTVAL,'DHONI')
+INSERT INTO PLAYER VALUES(MYSEQUENCE.NEXTVAL,'VIRAT KOHLI');
+INSERT INTO PLAYER VALUES(MYSEQUENCE.NEXTVAL,'AD De VILLIERS');
+INSERT INTO PLAYER VALUES(MYSEQUENCE.NEXTVAL,'GLENN MAXWELL');
+INSERT INTO PLAYER VALUES(MYSEQUENCE.NEXTVAL,'KL RAHUL');
+
+
+
+CREATE TABLE ACCOUNTS 
+(
+    ACNO NUMBER PRIMARY KEY,
+    ACNAME VARCHAR2(20) NOT NULL,
+    ACBAL NUMBER
+)
+
+
+INSERT INTO ACCOUNTS VALUES (MYSEQUENCE.NEXTVAL,'JACK',50000);
+INSERT INTO ACCOUNTS VALUES (MYSEQUENCE.NEXTVAL,'JACKY',60000);
+INSERT INTO ACCOUNTS VALUES (MYSEQUENCE.NEXTVAL,'JANE',70000);
+INSERT INTO ACCOUNTS VALUES (MYSEQUENCE.NEXTVAL,'JULIE',80000);
+INSERT INTO ACCOUNTS VALUES (MYSEQUENCE.NEXTVAL,'JACK',90000);
+
+
+SELECT * FROM ACCOUNTS
+
+---SINGLE ROW FUNCTIONS - RETURN ONLY ONE ROW
+SELECT SUM(SAL),MIN(SAL),MAX(SAL),AVG(SAL) FROM EMP
+
+******************************************************************************************************
+PL SQL SCRIPTING
+
+
+DECLARE
+    X NUMBER:=10;
+    Y VARCHAR2(20):='JACK';
+    Z NUMBER:=50000;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('X ' ||X);
+    DBMS_OUTPUT.PUT_LINE('Y ' ||Y);
+    DBMS_OUTPUT.PUT_LINE('Z ' ||Z);
+END;
+
+
+---PL SQL SCRIPTING
+        --ANONYMOUS BLOCK  
+        -- NAMED BLOCK - STORED PROCEDURE,FUNCTIONS,TRIGGERS
+
+---A. ANONYMOUS BLOCK IS NOT STORED 
+DECLARE
+    X NUMBER;
+    Y VARCHAR2(20);
+    Z NUMBER;
+    P NUMBER;
+    Q VARCHAR2(20);
+    R NUMBER;
+BEGIN
+SELECT * INTO P,Q,R FROM ACCOUNTS WHERE ACNO=35;
+    DBMS_OUTPUT.PUT_LINE('P ' ||P);
+    DBMS_OUTPUT.PUT_LINE('Q ' ||Q);
+    DBMS_OUTPUT.PUT_LINE('R ' ||R);
+    
+    SELECT * INTO X,Y,Z FROM ACCOUNTS WHERE ACNO=34;
+    DBMS_OUTPUT.PUT_LINE('               ');
+    DBMS_OUTPUT.PUT_LINE('X ' ||X);
+    DBMS_OUTPUT.PUT_LINE('Y ' ||Y);
+    DBMS_OUTPUT.PUT_LINE('Z ' ||Z);
+END;
+
+
